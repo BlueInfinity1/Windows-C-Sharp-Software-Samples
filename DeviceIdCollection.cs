@@ -1,11 +1,19 @@
-﻿namespace NativeService
+namespace NativeService
 {
-    class DeviceIdCollection //collections of vid-pid identifiers of different devices
+    // Collection of known VID-PID identifiers for different devices.
+    // Additional devices can be added here as needed.
+    class DeviceIdCollection
     {
-        //more devices can be added here later on, and possibly more info that is needed
-        public const string testUsbStickId = "";//"058F-6387"; //test USB Stick
-        public const string noxId = "058F-6387";//"8765-1000"; <- This is the real Nox device id
+        // Test USB Stick (previously "058F-6387", left empty for now)
+        public const string testUsbStickId = "";
 
-        public static readonly string[] deviceIdList = {testUsbStickId, noxId};
+        // Nox Medical Device
+        public const string noxId = "058F-6387";
+
+        /// <summary>
+        /// List of known device identifiers (VID-PID format).
+        /// Modify this list to support additional devices.
+        /// </summary>
+        public static readonly string[] deviceIdList = { testUsbStickId, noxId };
     }
 }
