@@ -28,7 +28,8 @@ namespace NativeService
 
         public void ShowBalloonTip(string msg, int duration = 500, string hoverText = null)
         {
-            hoverText ??= msg;
+            if (hoverText == null)
+                hoverText = msg;
 
             trayIcon.BalloonTipText = msg;
             trayIcon.BalloonTipIcon = ToolTipIcon.Info;
