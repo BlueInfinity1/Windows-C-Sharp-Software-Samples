@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -9,19 +9,21 @@ namespace NativeService
     {
         private string drive;
         private readonly string deviceType;
+
         public MedicalDevice(string vid, string pid)
         {
             Vid = vid;
             Pid = pid;
             drive = null;
-            deviceType = vid + "-" + pid;
+            deviceType = $"{vid}-{pid}";
         }
+
         public MedicalDevice(string vid, string pid, string drive)
         {
             Vid = vid;
             Pid = pid;
             this.drive = drive;
-            deviceType = vid + "-" + pid;
+            deviceType = $"{vid}-{pid}";
         }
 
         public string Vid { get; private set; }
@@ -34,112 +36,135 @@ namespace NativeService
 
         public string GetSerialNumber()
         {
-            Console.WriteLine("Getting serial number for " + Vid +"-"+Pid);
+            Console.WriteLine($"Getting serial number for {Vid}-{Pid}");
             string serialNumber = null;
 
             switch (deviceType)
             {
                 case DeviceIdCollection.noxId:
-                    if (File.Exists(drive + "DEVICE.ini"))
+                    string deviceIniPath = Path.Combine(drive, "DEVICE.ini");
+
+                    if (File.Exists(deviceIniPath))
                     {
-                        Console.WriteLine("Device.ini found");
-                        LogWriter.Write("Device.ini found", LogWriter.LogEventType.Event);
+                        Console.WriteLine("DEVICE.ini found");
+                        LogWriter.Write("DEVICE.ini found", LogWriter.LogEventType.Event);
                         try
                         {
-                            serialNumber = IniReader.ReadIniValue(drive + "DEVICE.ini", "DeviceInfo", "SerialNumber");
+                            serialNumber = IniReader.ReadIniValue(deviceIniPath, "DeviceInfo", "SerialNumber");
                         }
                         catch (Exception)
                         {
-                            LogWriter.Write("Could not get serial number from Nox Device.ini", LogWriter.LogEventType.Error);
+                            LogWriter.Write("Could not get serial number from Nox DEVICE.ini", LogWriter.LogEventType.Error);
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Device.ini not found");
-                        LogWriter.Write("Device.ini not found", LogWriter.LogEventType.Error);
+                        Console.WriteLine("DEVICE.ini not found");
+                        LogWriter.Write("DEVICE.ini not found", LogWriter.LogEventType.Error);
                     }
                     break;
 
                 default:
-                    LogWriter.Write("Device Type not recognized", LogWriter.LogEventType.Error);
+                    LogWriter.Write("Device type not recognized", LogWriter.LogEventType.Error);
                     break;
             }
+
             return serialNumber;
         }
+
         public string GetPatientInfoIdentifier()
         {
-            string recordingValue;
             string identifier = null;
 
             switch (deviceType)
             {
                 case DeviceIdCollection.noxId:
-                    if (File.Exists(drive + "SETUP.ini"))
+                    string setupIniPath = Path.Combine(drive, "SETUP.ini");
+
+                    if (File.Exists(setupIniPath))
                     {
                         try
                         {
-                            LogWriter.Write("Setup.ini found", LogWriter.LogEventType.Event);
-                            recordingValue = IniReader.ReadIniValue(drive + "SETUP.ini", null, "Recording");
-                            Console.WriteLine("Recording, full value: " + recordingValue);
-                            //get the UUID after the first ;, it will always be the same length, 36 chars
-                            identifier = recordingValue.Substring(recordingValue.IndexOf(";") + 1, 36);
-                            Console.WriteLine("...and the uuid value is " + identifier);
+                            LogWriter.Write("SETUP.ini found", LogWriter.LogEventType.Event);
+                            string recordingValue = IniReader.ReadIniValue(setupIniPath, null, "Recording");
+
+                            Console.WriteLine($"Recording, full value: {recordingValue}");
+
+                            // Extract UUID (after first ';', always 36 characters long)
+                            int index = recordingValue.IndexOf(";");
+                            if (index >= 0 && index + 37 <= recordingValue.Length)
+                            {
+                                identifier = recordingValue.Substring(index + 1, 36);
+                                Console.WriteLine($"Extracted UUID value: {identifier}");
+                            }
+                            else
+                            {
+                                LogWriter.Write("Invalid format in SETUP.ini recording value", LogWriter.LogEventType.Error);
+                            }
                         }
                         catch (Exception)
                         {
-                            LogWriter.Write("Could not get patient identifier from Setup.ini", LogWriter.LogEventType.Error);
+                            LogWriter.Write("Could not get patient identifier from SETUP.ini", LogWriter.LogEventType.Error);
                         }
                     }
                     else
-                        LogWriter.Write("Setup.ini not found in the device",LogWriter.LogEventType.Error);
-
+                    {
+                        LogWriter.Write("SETUP.ini not found on the device", LogWriter.LogEventType.Error);
+                    }
                     break;
             }
+
             return identifier;
         }
+
         public List<FileInfo> GetMeasuredData()
         {
             List<FileInfo> measuredData = new List<FileInfo>();
+
             switch (deviceType)
             {
-                case DeviceIdCollection.noxId: //Grab all files from the device drive
+                case DeviceIdCollection.noxId:
                     try
                     {
+                        Console.WriteLine("Retrieving all files...");
                         string[] filePaths = Directory.GetFiles(drive, "*", SearchOption.AllDirectories);
-                        Console.WriteLine("Getting all files");
 
                         foreach (string path in filePaths)
                         {
                             Console.WriteLine(path);
                             measuredData.Add(new FileInfo(path));
                         }
-                    }    
+                    }
                     catch (Exception e)
                     {
-                        LogWriter.Write("Unable to get device files: " + e.Message, LogWriter.LogEventType.Error);
+                        LogWriter.Write($"Unable to retrieve device files: {e.Message}", LogWriter.LogEventType.Error);
                     }
                     break;
             }
+
             return measuredData;
         }
 
-        //Specific to the Nox Device only? Refactor by making different devices inherit from MedicalDevice when more devices get added
+        // This method is currently specific to the Nox Device.
+        // When more devices are added, consider refactoring this class so that different device types inherit from MedicalDevice.
         public void SetDeviceClockAndScheduling(string command)
         {
             if (!DeviceHandler.IsDeviceAttached())
                 return;
+
+            string commandFilePath = Path.Combine(drive, "x8aCOMMAND.NCF");
+
             try
             {
-                using (FileStream commandFile = File.OpenWrite(drive + "x8aCOMMAND.NCF"))
+                using (FileStream commandFile = File.OpenWrite(commandFilePath))
                 {
-                    byte[] commandAsBytes = new UTF8Encoding(true).GetBytes(command);
-                    commandFile.Write(commandAsBytes, 0, commandAsBytes.Length);
+                    byte[] commandBytes = Encoding.UTF8.GetBytes(command);
+                    commandFile.Write(commandBytes, 0, commandBytes.Length);
                 }
             }
             catch (Exception e)
             {
-                LogWriter.Write("Unable to write the clock or scheduling command to x8aCOMMAND.NCF: " + e.Message,
-                    LogWriter.LogEventType.Error);
+                LogWriter.Write($"Failed to write clock/scheduling command to x8aCOMMAND.NCF: {e.Message}", LogWriter.LogEventType.Error);
             }
         }
     }
