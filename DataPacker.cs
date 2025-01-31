@@ -13,7 +13,7 @@ namespace NativeService
                 using (DeflateStream compressionStream = new DeflateStream(outputStream, CompressionLevel.Optimal, true))
                 {
                     compressionStream.Write(dataToCompress, 0, dataToCompress.Length);
-                    compressionStream.Flush(); // Ensure all data is written
+                    compressionStream.Flush(); 
                 }
                 return outputStream.ToArray();
             }
