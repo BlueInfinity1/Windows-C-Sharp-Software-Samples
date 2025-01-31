@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace NativeService
 {
-    //This is a helper class for getting the correct USB Drive for the Medical Device
-    //Taken from https://stackoverflow.com/questions/17371578/find-usb-drive-letter-from-vid-pid-needed-for-xp-and-higher
+    // This is a helper class for getting the correct USB Drive for the Medical Device
+    // Taken from https://stackoverflow.com/questions/17371578/find-usb-drive-letter-from-vid-pid-needed-for-xp-and-higher
     class USBDeviceInfo
     {
         public USBDeviceInfo(string deviceID, string pnpDeviceID, string description)
