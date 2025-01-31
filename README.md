@@ -1,9 +1,9 @@
-# C# Background Service Samples
+# C# Tray Application Samples
 
-This repository includes sample C# classes for a **background service** that listens for the connection of a Nox sleep diagnostic machine via USB. The Nox device records data for sleep apnea patients, and this service is responsible for detecting the device, checking for new data, and securely transferring it to a server.
+This repository includes sample C# classes for a **tray application** that listens for the connection of a Nox sleep diagnostic machine via USB. The Nox device records data for sleep apnea patients, and this service is responsible for detecting the device, checking for new data, and securely transferring it to a server.
 
 ## Features
-
+- **Tray Application**: Runs in the **Windows system tray (notification area)**, providing a minimal interface while operating in the background.  
 - **Device Monitoring**: Detects when a Nox device is connected to the system via USB. The device is mounted at a specific drive location (check the code for details).
 - **WebSocket Communication**: Establishes a WebSocket connection with a server for real-time data transfer.
 - **Data Novelty Check**: Compares the hash of the data on the device with the hash stored on the server to determine if new data is available.
