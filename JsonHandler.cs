@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 
@@ -11,34 +11,24 @@ namespace NativeService
             try
             {
                 JObject obj = JObject.Parse(json);
-                Console.WriteLine("JSON handler: select token " + token);
-                Console.WriteLine("Which is: " + (string)obj.SelectToken(token));
-                //Console.WriteLine("data.payload: " + obj.data.payload);
 
-                return (string)obj.SelectToken(token); //"data[0].payload"
+                LogWriter.Write($"JSON handler: selecting token '{token}'", LogWriter.LogEventType.Event);
+                string value = obj.SelectToken(token)?.ToString();
+
+                LogWriter.Write($"Token '{token}' value: {value}", LogWriter.LogEventType.Event);
+
+                return value;
             }
             catch (JsonReaderException jre)
             {
-                LogWriter.Write("JSON Parsing error: "+jre.Message, LogWriter.LogEventType.Error);
-                Console.WriteLine("Problems parsing JSON: "+jre.Message);
+                LogWriter.Write($"JSON parsing error: {jre.Message}", LogWriter.LogEventType.Error);
+                return null;
+            }
+            catch (Exception e)
+            {
+                LogWriter.Write($"Unexpected error in JSON parsing: {e.Message}", LogWriter.LogEventType.Error);
                 return null;
             }
         }
-
-        /*public static void ReadJson(string json)
-        {
-            JsonTextReader reader = new JsonTextReader(new StringReader(json));
-            while (reader.Read())
-            {
-                if (reader.Value != null)
-                {
-                    Console.WriteLine("Token: {0}, Value: {1}", reader.TokenType, reader.Value);
-                }
-                else
-                {
-                    Console.WriteLine("Token: {0}", reader.TokenType);
-                }
-            }
-        }*/
     }
 }
