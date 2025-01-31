@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace NativeService
 {
-    //This is a helper class for getting the correct USB Drive for the Medical Device
-    //Taken from https://stackoverflow.com/questions/17371578/find-usb-drive-letter-from-vid-pid-needed-for-xp-and-higher
+    // This is a helper class for getting the correct USB Drive for the Medical Device
+    // Taken from https://stackoverflow.com/questions/17371578/find-usb-drive-letter-from-vid-pid-needed-for-xp-and-higher
     public sealed class Device : IDisposable
     {
         private IntPtr _hDevInfo;
