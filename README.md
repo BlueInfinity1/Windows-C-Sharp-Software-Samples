@@ -1,4 +1,4 @@
-### C# Background Service Samples
+# C# Background Service Samples
 
 This repository includes sample C# classes for a **background service** that listens for the connection of a Nox sleep diagnostic machine via USB. The Nox device records data for sleep apnea patients, and this service is responsible for detecting the device, checking for new data, and securely transferring it to a server.
 
