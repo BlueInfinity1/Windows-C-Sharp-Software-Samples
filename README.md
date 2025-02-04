@@ -14,7 +14,7 @@ This repository includes sample C# classes for a **tray application** that liste
   - Compresses data using zlib.
   - Encrypts each chunk using AES block cipher.
   - Transfers encrypted data chunks securely to the server.
-  - Transferred data integrity is verified by comparing hashes of the 
+  - Transferred data integrity is verified by comparing hashes.
 - **Logging**: Logs events and operations to rotating log files.
 
 Note that some of these features are not implemented in the sample classes.
