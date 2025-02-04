@@ -47,7 +47,7 @@ namespace NativeService
             DeviceRecognized,
             DataPacked,
             DataSent,
-            DeviceInitialized,
+            DeviceInitialized, // This refers to re-initializing the device after all data has been sent to the server.
             ConnectionLost,
             Reconnected
         }
