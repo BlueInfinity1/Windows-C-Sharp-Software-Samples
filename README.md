@@ -25,7 +25,7 @@ This project was initially intended for commercial use but was later cancelled, 
 
 ## Example Run
 
-Here are some screenshots of the console messages during a single run of the application.
+Here are some screenshots of the console messages during a single run of a past version of the application.
 
 ![Example Run](https://drive.google.com/uc?export=view&id=1301urQEyyqy9VzWBwzNcpAtbfTBglvh2 "Example Run")
 
