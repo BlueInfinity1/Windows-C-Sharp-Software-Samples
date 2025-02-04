@@ -13,7 +13,7 @@ This repository includes sample C# classes for a **tray application** that liste
   - Splits new data into chunks (maximum 64 KB per chunk).
   - Compresses data using zlib.
   - Encrypts each chunk using AES block cipher.
-  - Transfers encrypted data chunks securely to the server.
+  - Transfers encrypted data chunks securely to the server using Base64 encoding.
   - Transferred data integrity is verified by comparing hashes.
 - **Logging**: Logs events and operations to rotating log files.
 
